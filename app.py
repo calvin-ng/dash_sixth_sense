@@ -17,6 +17,7 @@ mapbox_access_token = 'pk.eyJ1IjoiY2FsZGFzaHZpbm5nIiwiYSI6ImNqcGQzdXlndjAzbnkza3
 
 #dash app
 app = dash.Dash(name=__name__)
+server= app.server
 app.config.suppress_callback_exceptions = True
 
 
@@ -364,6 +365,5 @@ def by_year(year, classification):
 
 
 # Run dash server
-server= app.server
 if __name__ == '__main__':
     app.run_server(debug=True)
