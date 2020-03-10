@@ -29,7 +29,7 @@ if(os.path.isfile('bfro_report_locations.csv')):
 app.layout = html.Div([
     # LANDING
     html.Div(
-        id="header"
+        id="header",
         className='section',
         children=[
             html.H1('Sixth Sense', className='landing-text')
