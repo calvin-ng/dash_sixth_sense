@@ -14,6 +14,11 @@ from dash.dependencies import Input, Output, State
 
 mapbox_access_token = 'pk.eyJ1IjoiY2FsZGFzaHZpbm5nIiwiYSI6ImNqcGQzdXlndjAzbnkza3FndWwwZTdoeWoifQ.BDmYzs6179dETDzGW25WEg'
 
+css_url = 'https://codepen.io/IvanNieto/pen/bRPJyb.css'
+css_bootstrap_url = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'
+app.css.append_css({
+    "external_url": [css_bootstrap_url, css_url],
+})
 
 #dash app
 app = dash.Dash(name=__name__)
