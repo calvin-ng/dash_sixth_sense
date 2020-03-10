@@ -21,7 +21,8 @@ app.config.suppress_callback_exceptions = True
 
 
 #read data into panda df
-df = pd.read_csv('bfro_report_locations.csv')
+if(os.path.isfile('bfro_report_locations.csv')):
+    df = pd.read_csv('bfro_report_locations.csv')
 
 
 app.layout = html.Div([
