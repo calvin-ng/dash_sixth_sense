@@ -1,5 +1,5 @@
 dash>=1.4.0
-dash renderer>=1.0.0
+dash-renderer>=1.2.4
 plotly>=4.5.3
 gunicorn>=19.7.1
 numpy>=1.14.0
