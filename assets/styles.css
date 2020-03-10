@@ -1,13 +1,19 @@
 body {
-    background: #191a1a;
+    background: #F0FFF0;
     padding: 50px;
 }
 
-.section {
-    height: 100vh;
-    min-height: 100vh;
+.header {
+    height: 10vh;
+    min-height: 10vh;
+
 }
 
+.mapgraph{
+    height: 150vh;
+    width: auto;
+    position:relative;
+}
 .rc-slider {
     position: relative;
     height: 14px;

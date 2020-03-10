@@ -31,9 +31,9 @@ app.layout = html.Div([
     # LANDING
     html.Div(
         id="header",
-        className='section',
+        className='header',
         children=[
-            html.H1('Sixth Sense', className='landing-text')
+            html.H1('Sixth Sense')
         ]
     ),
 
@@ -42,15 +42,11 @@ app.layout = html.Div([
         children=[
             # MAP ROW
             html.Div(
-                className='row',
+                className='mapgraph',
                 children=[
                     dcc.Graph(
                         id='mapgraph',
                         #animate=False,
-                        style={
-                          'width': '120%',
-                          'height': 800,
-                        },
                         clickData={'points': [{'customdata': '10407'}]}
                     ),
                 ]
