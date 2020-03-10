@@ -110,8 +110,8 @@ app.layout = html.Div([
                         id='by_year',
                         animate = True,
                         style={
-                          'width': '120%',
-                          'height': 800,
+                          'width': '80%',
+                          'height': 600,
                         }
                     )
                 ]
@@ -226,8 +226,8 @@ def create_CV(dff):
             'r': 0
         },
         hovermode='closest',
-        paper_bgcolor='#191a1a',
-        plot_bgcolor='#191a1a',
+        paper_bgcolor='#FFFFF0',
+        plot_bgcolor='#FFFFF0',
         autosize = True,
     )
 
@@ -349,8 +349,8 @@ def by_year(year, classification):
             'r': 0
             },
             hovermode='closest',
-            paper_bgcolor='#191a1a',
-            plot_bgcolor='#191a1a',
+            paper_bgcolor='#FFFFF0',
+            plot_bgcolor='#FFFFF0',
             autosize = True,
             )
 
