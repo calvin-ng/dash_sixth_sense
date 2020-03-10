@@ -21,11 +21,6 @@ app = dash.Dash(name=__name__)
 server= app.server
 app.config.suppress_callback_exceptions = True
 
-css_url = 'https://codepen.io/IvanNieto/pen/bRPJyb.css'
-css_bootstrap_url = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'
-app.css.append_css({
-    "external_url": [css_bootstrap_url, css_url],
-})
 
 #read data into panda df
 if(os.path.isfile('bfro_report_locations.csv')):
