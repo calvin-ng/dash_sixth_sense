@@ -2,6 +2,7 @@ import dash
 import os
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table as dt
 import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
@@ -24,7 +25,7 @@ app.config.suppress_callback_exceptions = True
 
 
 #including bootstrap
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 #read data into panda df
 if(os.path.isfile('bfro_report_locations.csv')):
@@ -42,20 +43,38 @@ header = dbc.Container([
 ])
 
 #BODY
-body = dbc.Container([# LANDING
-        html.Div(
-            className='content',
-            children=[
-            # MAP ROW
-                html.Div(
-                    className='mapgraph',
-                    children=[
-                        dcc.Graph(
-                            id='mapgraph',
-                            clickData={'points': [{'customdata': '10407'}]}
-                        ),
-                    ]
-                ),
+body = dbc.Container([
+    dbc.Row([
+    #MAP GRAPH
+        dbc.Col([
+            dbc.Row([
+                dcc.Graph(id='CVgraph')
+            ], ),
+            dbc.Row([
+                dt.DataTable(
+                    id='case_table',
+                    columns=[{"name": i, "id": i} for i in df.columns],
+                    data=df.to_dict('records'),
+                    style_table={
+                        'maxHeight': '300px',
+                        'overflowY': 'scroll',
+                        'overflowX': 'scroll'
+                    },
+                )
+            ], )
+        ], width = 6),
+
+        dbc.Col([   
+            dcc.Graph(
+                id='mapgraph',
+                clickData={'points': [{'customdata': '10407'}]}
+            ),
+        ], width = 6)
+    ],
+    style={"height": "400px"},
+    ), #END OF dbc.Row
+#================================================================================
+
 
             # YEAR SLIDER ROW
             html.Div(
@@ -70,12 +89,12 @@ body = dbc.Container([# LANDING
                         step=None,
                     ),
                 ],
-            ),
+            ), #END OF YEAR SLIDER
 
             #CHECKING OUTPUT FROM CHECKLIST
             html.Div(
                 id='checklist-output'
-            ),
+            ), #END OF CHECKING OUTPUT FROM CHECKLIST
 
             #CHECKLIST FOR CLASS
             html.Div(
@@ -88,12 +107,9 @@ body = dbc.Container([# LANDING
                     ],
                     value=['Class A', 'Class A']
                 ),
-            ),
+            ), #END OF CHECKLIST FOR CLASS
 
-            #CV GRAPH
-            html.Div([
-                dcc.Graph(id='CVgraph'),
-            ]),
+
 
             #CLICK DATA OUTPUT
             html.Div([
@@ -106,7 +122,7 @@ body = dbc.Container([# LANDING
                 html.Pre(id='click-data'),
             ],
                 className='three columns'
-            ),
+            ), #CLICK DATA OUTPUT
 
             #YEAR GRAPH
             html.Div(
@@ -121,10 +137,10 @@ body = dbc.Container([# LANDING
                         }
                     )
                 ]
-            )
-        ],
-        )
-])
+            ) #END OF YEAR GRAPH
+        ]
+
+) #END of dbc.Container
 
 app.layout = html.Div([header, body])
 
