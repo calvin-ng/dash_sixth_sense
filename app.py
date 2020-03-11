@@ -22,6 +22,9 @@ server= app.server
 app.config.suppress_callback_exceptions = True
 
 
+#including bootstrap
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
+
 #read data into panda df
 if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
@@ -163,7 +166,7 @@ def update_map(year, classification):
         )
     ],
 
-    )
+        )
 
 
     # Layout and mapbox properties
