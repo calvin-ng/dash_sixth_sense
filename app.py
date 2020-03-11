@@ -151,7 +151,6 @@ def update_map(year, classification):
     for classes in classification:
         dff_c = dff_c.append(dff[dff['classification'] == classes], ignore_index=True)
 
-
     # Paint mapbox into the data
     mapdata = go.Data([
         go.Densitymapbox(
@@ -260,7 +259,6 @@ def update_CV(clickData):
 def by_year(year, classification):
     dff = df[(df['year'] >= year[0]) & (df['year'] <=year[1])]
     dfff = dff[dff['classification']=='empty']
-    print("RESET")
     for classes in classification:
         dfff = dfff.append(dff[dff['classification'] == classes], ignore_index=True)
     dfff = dfff.groupby(['year','classification'] , as_index=False).count()
