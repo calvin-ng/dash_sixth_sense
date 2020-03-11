@@ -207,14 +207,14 @@ def create_CV(dff):
     layout = go.Layout(
         xaxis={
             #'autorange': True,
-            'color': '#FFF',
+            'color': '#000000',
             'title': 'x',
             'range': [dff.iloc[:,0].min(), dff.iloc[:,0].max()],
             'dtick': 1
         },
         yaxis={
             #'autorange': True,
-            'color': '#FFF',
+            'color': '#000000',
             'title': 'y',
             'range': [dff.iloc[:,1].min(), dff.iloc[:,1].max()],
             #'dtick': 5
@@ -227,7 +227,7 @@ def create_CV(dff):
         },
         hovermode='closest',
         paper_bgcolor='#FFFFF0',
-        plot_bgcolor='#000000',
+        plot_bgcolor='#FFFFF0',
         autosize = True,
     )
 
@@ -330,14 +330,14 @@ def by_year(year, classification):
     layout = go.Layout(
         xaxis={
             #'autorange': True,
-            'color': '#FFF',
+            'color': '#000000',
             'title': 'year',
             'range': [year[0], year[1]],
             'dtick': 1
             },
         yaxis={
             #'autorange': True,
-            'color': '#FFF',
+            'color': '#000000',
             'title': 'Count',
             'range': [y_min-50, y_max+50],
             #'dtick': 5
@@ -350,7 +350,7 @@ def by_year(year, classification):
             },
             hovermode='closest',
             paper_bgcolor='#FFFFF0',
-            plot_bgcolor='#000000',
+            plot_bgcolor='#FFFFF0',
             autosize = True,
             )
 
