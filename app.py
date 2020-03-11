@@ -227,7 +227,7 @@ def create_CV(dff):
         },
         hovermode='closest',
         paper_bgcolor='#FFFFF0',
-        plot_bgcolor='#FFFFF0',
+        plot_bgcolor='#000000',
         autosize = True,
     )
 
@@ -350,7 +350,7 @@ def by_year(year, classification):
             },
             hovermode='closest',
             paper_bgcolor='#FFFFF0',
-            plot_bgcolor='#FFFFF0',
+            plot_bgcolor='#000000',
             autosize = True,
             )
 
