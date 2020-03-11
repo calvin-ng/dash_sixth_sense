@@ -30,29 +30,33 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
 
-body = dbc.Container([# LANDING
-        html.Div(
+#HEADER
+header = dbc.Container([
+    html.Div(
         id="header",
         className='header',
         children=[
             html.H1('Sixth Sense')
         ]
-        ),
+    ),
+])
 
+#BODY
+body = dbc.Container([# LANDING
         html.Div(
-        className='content',
-        children=[
+            className='content',
+            children=[
             # MAP ROW
-            html.Div(
-                className='mapgraph',
-                children=[
-                    dcc.Graph(
-                        id='mapgraph',
-                        #animate=False,
-                        clickData={'points': [{'customdata': '10407'}]}
-                    ),
-                ]
-            ),
+                html.Div(
+                    className='mapgraph',
+                    children=[
+                        dcc.Graph(
+                            id='mapgraph',
+                            clickData={'points': [{'customdata': '10407'}]}
+                        ),
+                    ]
+                ),
+
             # YEAR SLIDER ROW
             html.Div(
                 className='col',
@@ -72,9 +76,11 @@ body = dbc.Container([# LANDING
             html.Div(
                 id='checklist-output'
             ),
+
+            #CHECKLIST FOR CLASS
             html.Div(
                 dcc.Checklist(
-                id='class-checklist',
+                    id='class-checklist',
                     options=[
                         {'label': 'Class A', 'value': 'Class A'},
                         {'label': 'Class B', 'value': 'Class B'},
@@ -84,13 +90,12 @@ body = dbc.Container([# LANDING
                 ),
             ),
 
+            #CV GRAPH
             html.Div([
                 dcc.Graph(id='CVgraph'),
-            ],
-                style={'display': 'inline-block', 'width': '49%'}
-            ),
+            ]),
 
-        #CLICK DATA OUTPUT
+            #CLICK DATA OUTPUT
             html.Div([
                 dcc.Markdown(d("""
                     **Click Data**
@@ -98,13 +103,12 @@ body = dbc.Container([# LANDING
                     Click on points in the graph.
                     """
                 )),
-
                 html.Pre(id='click-data'),
             ],
                 className='three columns'
             ),
 
-        #YEAR GRAPH
+            #YEAR GRAPH
             html.Div(
                 className = 'col',
                 children = [
@@ -119,10 +123,10 @@ body = dbc.Container([# LANDING
                 ]
             )
         ],
-        style={'padding': 40}
-        )])
+        )
+])
 
-app.layout = html.Div([body])
+app.layout = html.Div([header, body])
 
 
 @app.callback(
