@@ -2,6 +2,7 @@ import dash
 import os
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 import plotly
@@ -29,18 +30,16 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
 
-
-app.layout = html.Div([
-    # LANDING
-    html.Div(
+body = dbc.Container([# LANDING
+        html.Div(
         id="header",
         className='header',
         children=[
             html.H1('Sixth Sense')
         ]
-    ),
+        ),
 
-    html.Div(
+        html.Div(
         className='content',
         children=[
             # MAP ROW
@@ -91,7 +90,7 @@ app.layout = html.Div([
                 style={'display': 'inline-block', 'width': '49%'}
             ),
 
-#CLICK DATA OUTPUT
+        #CLICK DATA OUTPUT
             html.Div([
                 dcc.Markdown(d("""
                     **Click Data**
@@ -105,7 +104,7 @@ app.layout = html.Div([
                 className='three columns'
             ),
 
-#YEAR GRAPH
+        #YEAR GRAPH
             html.Div(
                 className = 'col',
                 children = [
@@ -121,8 +120,9 @@ app.layout = html.Div([
             )
         ],
         style={'padding': 40}
-    )
-])
+        )])
+
+app.layout = html.Div([body])
 
 
 @app.callback(
