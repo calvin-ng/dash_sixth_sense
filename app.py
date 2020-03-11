@@ -162,7 +162,7 @@ def update_map(year, classification):
             visible=True,
         )
     ],
-    #style={'height': 800}
+
     )
 
 
