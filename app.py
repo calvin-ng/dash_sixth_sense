@@ -40,7 +40,7 @@ header = dbc.Container([
             html.H1('Sixth Sense')
         ]
     ),
-])
+]),
 
 #BODY
 body = html.Div([
@@ -54,8 +54,8 @@ body = html.Div([
             )
         ]
         ,className = 'col-lg-9'), #left column
-        html.Div([ #col-lg-3 div
 
+        html.Div([ #col-lg-3 div
                 html.Div([ #div for dataTable and CV graph
                     dt.DataTable(
                         id='case_table',
@@ -94,11 +94,6 @@ body = html.Div([
                     ], className='col-lg-11'
                 ), #END OF YEAR SLIDER
 
-                # #CHECKING OUTPUT FROM CHECKLIST
-                # html.Div(
-                #     id='checklist-output'
-                # ), #END OF CHECKING OUTPUT FROM CHECKLIST
-
                 #CHECKLIST FOR CLASS
                 html.Div(
                     dcc.Checklist(
@@ -113,21 +108,6 @@ body = html.Div([
                 ), #END OF CHECKLIST FOR CLASS
 
     ], style={'padding': '50px'}),
-
-
-
-                # #CLICK DATA OUTPUT
-                # html.Div([
-                #     dcc.Markdown(d("""
-                #         **Click Data**
-                #
-                #         Click on points in the graph.
-                #         """
-                #     )),
-                #     html.Pre(id='click-data'),
-                # ],
-                #     className='three columns'
-                # ), #CLICK DATA OUTPUT
 
     dbc.Row([
         #YEAR GRAPH
@@ -144,24 +124,6 @@ body = html.Div([
 ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
 app.layout = html.Div([header, body])
-
-
-# @app.callback(
-#     Output('click-data', 'children'),
-#     [Input('mapgraph', 'clickData')])
-# def display_click_data(clickData):
-#     return 'Title is "{}"'.format(clickData['points'][0]['customdata'])
-
-
-# @app.callback(
-#     Output('checklist-output', 'children'),
-#     [Input('class-checklist', 'value')])
-# def checklist_output(value):
-#     string = "Selected classes are "
-#     for values in value:
-#         string = string + " " + values
-#     return string
-
 
 #MAPGRAPH
 @app.callback(
