@@ -2,6 +2,7 @@ import dash
 import os
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_renderer
 import dash_table as dt
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -32,31 +33,25 @@ if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
 
 #HEADER
-header = dbc.Container([
-    html.Div(
-        id="header",
-        className='header',
-        children=[
-            html.H1('Sixth Sense')
-        ]
-    ),
-]),
+header = dbc.Row([html.H1('Sixth Sense')], className = 'header'),
+
 
 #BODY
-body = html.Div([
-    dbc.Row([
-    #MAP GRAPH
-        html.Div([
-            dcc.Graph(
-                id='mapgraph',
-                clickData={'points': [{'customdata': '10407'}]},
-                style={'width': '100%','padding': '0px'}
-            )
-        ]
-        ,className = 'col-lg-9'), #left column
+body = html.Div(
+    children=[
+        dbc.Row([
+        #MAP GRAPH
+            html.Div(
+                dcc.Graph(
+                    id='mapgraph',
+                    clickData={'points': [{'customdata': '10407'}]},
+                    style={'width': '100%','padding': '0px'}
+                ),
+                className = 'col-lg-9'
+            ), #left column
 
-        html.Div([ #col-lg-3 div
-                html.Div([ #div for dataTable and CV graph
+            html.Div( #col-lg-3 div
+                children=[
                     dt.DataTable(
                         id='case_table',
                         columns=[{"name": i, "id": i} for i in df.columns],
@@ -68,60 +63,56 @@ body = html.Div([
                             'overflowX': 'scroll'
                         },
                     ),
-                    html.Div([ #div for the graph
-                        dcc.Graph(id='CVgraph')
-                        ]
-                    ),
-                ], style={'width':'100%'}),
 
-        ]
-        ,className='col-lg-3'), #right column
-    ],
-    style={"width":"100%"}), #END OF dbc.Row
+                    html.Div( #div for the graph
+                        dcc.Graph(id='CVgraph')
+                    ),
+                ],
+
+                className='col-lg-3',
+            )
+        ], style={"width":"100%"}), #END OF dbc.Row
 #================================================================================
 
-    dbc.Row([            # YEAR SLIDER ROW
-                html.Div(
-                    children=[
-                        dcc.RangeSlider(
-                            id='date-slider',
-                            min=2000,
-                            max=2019,
-                            value=[2000,2010],
-                            marks={str(year): str(year) for year in df['year'].unique()},
-                            step=None,
-                        ),
-                    ], className='col-lg-11'
-                ), #END OF YEAR SLIDER
-
-                #CHECKLIST FOR CLASS
-                html.Div(
-                    dcc.Checklist(
-                        id='class-checklist',
-                        options=[
-                            {'label': 'Infected', 'value': 'Class A'},
-                            {'label': 'Not-Infected', 'value': 'Class B'},
-                            #{'label': 'Class C', 'value': 'Class C'}
-                        ],
-                        value=['Class A', 'Class B']
+        dbc.Row([            # YEAR SLIDER ROW
+            html.Div(
+                children=[
+                    dcc.RangeSlider(
+                        id='date-slider',
+                        min=2000,
+                        max=2019,
+                        value=[2000,2010],
+                        marks={str(year): str(year) for year in df['year'].unique()},
+                        step=None,
                     ),
-                ), #END OF CHECKLIST FOR CLASS
+                ], className='col-lg-11',
+            ), #END OF YEAR SLIDER
 
-    ], style={'padding': '50px'}),
+        #CHECKLIST FOR CLASS
+            html.Div(
+                dcc.Checklist(
+                    id='class-checklist',
+                    options=[
+                        {'label': 'Infected', 'value': 'Class A'},
+                        {'label': 'Not-Infected', 'value': 'Class B'},
+                    ],
+                    value=['Class A', 'Class B']
+                ),
+            ), #END OF CHECKLIST FOR CLASS
+        ], style={'padding': '50px'}),
 
-    dbc.Row([
+        dbc.Row([
         #YEAR GRAPH
-        html.Div(
-            children = [
-                dcc.Graph(
-                    id='by_year',
-                    animate = True,
-                )
-            ]
-        ) #END OF YEAR GRAPH])
-    ])
-
-], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
+            html.Div(
+                children = [
+                    dcc.Graph(
+                        id='by_year',
+                        animate = True,
+                    )
+                ]
+            ), #END OF YEAR GRAPH])
+        ]),
+    ], style={'margin' : '0px', 'padding':'0px'} ) #END of dbc.Container
 
 app.layout = html.Div([header, body])
 
