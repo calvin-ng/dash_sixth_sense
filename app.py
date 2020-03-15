@@ -19,7 +19,6 @@ mapbox_access_token = 'pk.eyJ1IjoiY2FsZGFzaHZpbm5nIiwiYSI6ImNqcGQzdXlndjAzbnkza3
 
 
 #dash app
-app = dash.Dash(name=__name__)
 server= app.server
 app.config.suppress_callback_exceptions = True
 
@@ -64,7 +63,7 @@ body = dbc.Container([
             ], )
         ], width = 6),
 
-        dbc.Col([   
+        dbc.Col([
             dcc.Graph(
                 id='mapgraph',
                 clickData={'points': [{'customdata': '10407'}]}
