@@ -33,7 +33,7 @@ if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
 
 #HEADER
-header = dbc.Row([html.H1('Sixth Sense')], className = 'header'),
+header = dbc.Row([html.H1('Sixth Sense')], className = 'header')
 
 
 #BODY
@@ -112,9 +112,11 @@ body = html.Div(
                 ]
             ), #END OF YEAR GRAPH])
         ]),
-    ], style={'margin' : '0px', 'padding':'0px'} ) #END of dbc.Container
+    ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
-app.layout = html.Div([header, body])
+app.layout = html.Div(
+    children=[header, body],
+)
 
 #MAPGRAPH
 @app.callback(
