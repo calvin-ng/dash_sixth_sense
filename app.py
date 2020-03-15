@@ -2,6 +2,7 @@ import dash
 import os
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_renderer
 import dash_table as dt
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -19,65 +20,59 @@ mapbox_access_token = 'pk.eyJ1IjoiY2FsZGFzaHZpbm5nIiwiYSI6ImNqcGQzdXlndjAzbnkza3
 
 
 #dash app
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server= app.server
 app.config.suppress_callback_exceptions = True
 
-
-#including bootstrap
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 #read data into panda df
 if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
 
 #HEADER
-header = dbc.Container([
-    html.Div(
-        id="header",
-        className='header',
-        children=[
-            html.H1('Sixth Sense')
-        ]
-    ),
-])
+header = dbc.Row([html.H1('Sixth Sense')], className = 'header')
+
 
 #BODY
-body = dbc.Container([
-    dbc.Row([
-    #MAP GRAPH
-        dbc.Col([
-            dbc.Row([
-                dcc.Graph(id='CVgraph')
-            ], ),
-            dbc.Row([
-                dt.DataTable(
-                    id='case_table',
-                    columns=[{"name": i, "id": i} for i in df.columns],
-                    data=df.to_dict('records'),
-                    style_table={
-                        'maxHeight': '300px',
-                        'overflowY': 'scroll',
-                        'overflowX': 'scroll'
-                    },
-                )
-            ], )
-        ], width = 6),
+body = html.Div(
+    children=[
+        dbc.Row([
+        #MAP GRAPH
+            html.Div(
+                dcc.Graph(
+                    id='mapgraph',
+                    clickData={'points': [{'customdata': '10407'}]},
+                    style={'width': '100%','padding': '0px'}
+                ),
+                className = 'col-lg-9'
+            ), #left column
 
-        dbc.Col([
-            dcc.Graph(
-                id='mapgraph',
-                clickData={'points': [{'customdata': '10407'}]}
-            ),
-        ], width = 6)
-    ],
-    style={"height": "400px"},
-    ), #END OF dbc.Row
+            html.Div( #col-lg-3 div
+                children=[
+                    dt.DataTable(
+                        id='case_table',
+                        columns=[{"name": i, "id": i} for i in df.columns],
+                        data=df.to_dict('records'),
+                        style_table={
+                            'maxHeight': '250px',
+                            'maxWidth':'100%',
+                            'overflowY': 'scroll',
+                            'overflowX': 'scroll'
+                        },
+                    ),
+
+                    html.Div( #div for the graph
+                        dcc.Graph(id='CVgraph')
+                    ),
+                ],
+
+                className='col-lg-3',
+            )
+        ], style={"width":"100%"}), #END OF dbc.Row
 #================================================================================
 
-
-            # YEAR SLIDER ROW
+        dbc.Row([            # YEAR SLIDER ROW
             html.Div(
-                className='col',
                 children=[
                     dcc.RangeSlider(
                         id='date-slider',
@@ -87,78 +82,38 @@ body = dbc.Container([
                         marks={str(year): str(year) for year in df['year'].unique()},
                         step=None,
                     ),
-                ],
+                ], className='col-lg-11',
             ), #END OF YEAR SLIDER
 
-            #CHECKING OUTPUT FROM CHECKLIST
-            html.Div(
-                id='checklist-output'
-            ), #END OF CHECKING OUTPUT FROM CHECKLIST
-
-            #CHECKLIST FOR CLASS
+        #CHECKLIST FOR CLASS
             html.Div(
                 dcc.Checklist(
                     id='class-checklist',
                     options=[
-                        {'label': 'Class A', 'value': 'Class A'},
-                        {'label': 'Class B', 'value': 'Class B'},
-                        {'label': 'Class C', 'value': 'Class C'}
+                        {'label': 'Infected', 'value': 'Class A'},
+                        {'label': 'Not-Infected', 'value': 'Class B'},
                     ],
-                    value=['Class A', 'Class A']
+                    value=['Class A', 'Class B']
                 ),
             ), #END OF CHECKLIST FOR CLASS
+        ], style={'padding': '50px'}),
 
-
-
-            #CLICK DATA OUTPUT
-            html.Div([
-                dcc.Markdown(d("""
-                    **Click Data**
-
-                    Click on points in the graph.
-                    """
-                )),
-                html.Pre(id='click-data'),
-            ],
-                className='three columns'
-            ), #CLICK DATA OUTPUT
-
-            #YEAR GRAPH
+        dbc.Row([
+        #YEAR GRAPH
             html.Div(
-                className = 'col',
                 children = [
                     dcc.Graph(
                         id='by_year',
                         animate = True,
-                        style={
-                          'width': '80%',
-                          'height': 600,
-                        }
                     )
                 ]
-            ) #END OF YEAR GRAPH
-        ]
+            ), #END OF YEAR GRAPH])
+        ]),
+    ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
-) #END of dbc.Container
-
-app.layout = html.Div([header, body])
-
-
-@app.callback(
-    Output('click-data', 'children'),
-    [Input('mapgraph', 'clickData')])
-def display_click_data(clickData):
-    return 'Title is "{}"'.format(clickData['points'][0]['customdata'])
-
-
-@app.callback(
-    Output('checklist-output', 'children'),
-    [Input('class-checklist', 'value')])
-def checklist_output(value):
-    string = "Selected classes are "
-    for values in value:
-        string = string + " " + values
-    return string
+app.layout = html.Div(
+    children=[header, body],
+)
 
 #MAPGRAPH
 @app.callback(
@@ -182,6 +137,7 @@ def update_map(year, classification):
             customdata=dff_c['number'],
             colorscale='hot',
             visible=True,
+            colorbar=dict(borderwidth=1, xpad=1, ypad=1, thickness=3)
         )
     ],
 
@@ -190,7 +146,7 @@ def update_map(year, classification):
 
     # Layout and mapbox properties
     layout = go.Layout(
-        autosize=True,
+        #autosize=True,
         hovermode='closest',
         mapbox=dict(
             accesstoken=mapbox_access_token,
@@ -200,6 +156,13 @@ def update_map(year, classification):
             zoom=4,
             style='mapbox://styles/caldashvinng/ck5i8qzci0t8t1iphlvn9sdz7'
         ),
+        margin={
+            'l': 0,
+            'b': 0,
+            't': 0,
+            'r': 0
+        },
+
 
     )
 
@@ -249,7 +212,7 @@ def create_CV(dff):
         hovermode='closest',
         paper_bgcolor='#FFFFF0',
         plot_bgcolor='#FFFFF0',
-        autosize = True,
+        #autosize = True,
     )
 
     return go.Figure(
