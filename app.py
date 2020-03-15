@@ -43,125 +43,123 @@ header = dbc.Container([
 ])
 
 #BODY
-body = html.Div([
+body = dbc.Container([
     dbc.Row([
     #MAP GRAPH
-        html.Div([
+        dbc.Col([
+            dbc.Row([
+                dcc.Graph(id='CVgraph')
+            ], ),
+            dbc.Row([
+                dt.DataTable(
+                    id='case_table',
+                    columns=[{"name": i, "id": i} for i in df.columns],
+                    data=df.to_dict('records'),
+                    style_table={
+                        'maxHeight': '300px',
+                        'overflowY': 'scroll',
+                        'overflowX': 'scroll'
+                    },
+                )
+            ], )
+        ], width = 6),
+
+        dbc.Col([   
             dcc.Graph(
                 id='mapgraph',
-                clickData={'points': [{'customdata': '10407'}]},
-                style={'width': '100%','padding': '0px'}
-            )
-        ]
-        ,className = 'col-lg-9'), #left column
-        html.Div([ #col-lg-3 div
-
-                html.Div([ #div for dataTable and CV graph
-                    dt.DataTable(
-                        id='case_table',
-                        columns=[{"name": i, "id": i} for i in df.columns],
-                        data=df.to_dict('records'),
-                        style_table={
-                            'maxHeight': '250px',
-                            'maxWidth':'100%',
-                            'overflowY': 'scroll',
-                            'overflowX': 'scroll'
-                        },
-                    ),
-                    html.Div([ #div for the graph
-                        dcc.Graph(id='CVgraph')
-                        ]
-                    ),
-                ], style={'width':'100%'}),
-
-        ]
-        ,className='col-lg-3'), #right column
+                clickData={'points': [{'customdata': '10407'}]}
+            ),
+        ], width = 6)
     ],
-    style={"width":"100%"}), #END OF dbc.Row
+    style={"height": "400px"},
+    ), #END OF dbc.Row
 #================================================================================
 
-    dbc.Row([            # YEAR SLIDER ROW
-                html.Div(
-                    children=[
-                        dcc.RangeSlider(
-                            id='date-slider',
-                            min=2000,
-                            max=2019,
-                            value=[2000,2010],
-                            marks={str(year): str(year) for year in df['year'].unique()},
-                            step=None,
-                        ),
-                    ], className='col-lg-11'
-                ), #END OF YEAR SLIDER
 
-                # #CHECKING OUTPUT FROM CHECKLIST
-                # html.Div(
-                #     id='checklist-output'
-                # ), #END OF CHECKING OUTPUT FROM CHECKLIST
-
-                #CHECKLIST FOR CLASS
-                html.Div(
-                    dcc.Checklist(
-                        id='class-checklist',
-                        options=[
-                            {'label': 'Infected', 'value': 'Class A'},
-                            {'label': 'Not-Infected', 'value': 'Class B'},
-                            #{'label': 'Class C', 'value': 'Class C'}
-                        ],
-                        value=['Class A', 'Class B']
+            # YEAR SLIDER ROW
+            html.Div(
+                className='col',
+                children=[
+                    dcc.RangeSlider(
+                        id='date-slider',
+                        min=2000,
+                        max=2019,
+                        value=[2000,2010],
+                        marks={str(year): str(year) for year in df['year'].unique()},
+                        step=None,
                     ),
-                ), #END OF CHECKLIST FOR CLASS
+                ],
+            ), #END OF YEAR SLIDER
 
-    ], style={'padding': '50px'}),
+            #CHECKING OUTPUT FROM CHECKLIST
+            html.Div(
+                id='checklist-output'
+            ), #END OF CHECKING OUTPUT FROM CHECKLIST
+
+            #CHECKLIST FOR CLASS
+            html.Div(
+                dcc.Checklist(
+                    id='class-checklist',
+                    options=[
+                        {'label': 'Class A', 'value': 'Class A'},
+                        {'label': 'Class B', 'value': 'Class B'},
+                        {'label': 'Class C', 'value': 'Class C'}
+                    ],
+                    value=['Class A', 'Class A']
+                ),
+            ), #END OF CHECKLIST FOR CLASS
 
 
 
-                # #CLICK DATA OUTPUT
-                # html.Div([
-                #     dcc.Markdown(d("""
-                #         **Click Data**
-                #
-                #         Click on points in the graph.
-                #         """
-                #     )),
-                #     html.Pre(id='click-data'),
-                # ],
-                #     className='three columns'
-                # ), #CLICK DATA OUTPUT
+            #CLICK DATA OUTPUT
+            html.Div([
+                dcc.Markdown(d("""
+                    **Click Data**
 
-    dbc.Row([
-        #YEAR GRAPH
-        html.Div(
-            children = [
-                dcc.Graph(
-                    id='by_year',
-                    animate = True,
-                )
-            ]
-        ) #END OF YEAR GRAPH])
-    ])
+                    Click on points in the graph.
+                    """
+                )),
+                html.Pre(id='click-data'),
+            ],
+                className='three columns'
+            ), #CLICK DATA OUTPUT
 
-], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
+            #YEAR GRAPH
+            html.Div(
+                className = 'col',
+                children = [
+                    dcc.Graph(
+                        id='by_year',
+                        animate = True,
+                        style={
+                          'width': '80%',
+                          'height': 600,
+                        }
+                    )
+                ]
+            ) #END OF YEAR GRAPH
+        ]
+
+) #END of dbc.Container
 
 app.layout = html.Div([header, body])
 
 
-# @app.callback(
-#     Output('click-data', 'children'),
-#     [Input('mapgraph', 'clickData')])
-# def display_click_data(clickData):
-#     return 'Title is "{}"'.format(clickData['points'][0]['customdata'])
+@app.callback(
+    Output('click-data', 'children'),
+    [Input('mapgraph', 'clickData')])
+def display_click_data(clickData):
+    return 'Title is "{}"'.format(clickData['points'][0]['customdata'])
 
 
-# @app.callback(
-#     Output('checklist-output', 'children'),
-#     [Input('class-checklist', 'value')])
-# def checklist_output(value):
-#     string = "Selected classes are "
-#     for values in value:
-#         string = string + " " + values
-#     return string
-
+@app.callback(
+    Output('checklist-output', 'children'),
+    [Input('class-checklist', 'value')])
+def checklist_output(value):
+    string = "Selected classes are "
+    for values in value:
+        string = string + " " + values
+    return string
 
 #MAPGRAPH
 @app.callback(
@@ -185,7 +183,6 @@ def update_map(year, classification):
             customdata=dff_c['number'],
             colorscale='hot',
             visible=True,
-            colorbar=dict(borderwidth=1, xpad=1, ypad=1, thickness=3)
         )
     ],
 
@@ -194,7 +191,7 @@ def update_map(year, classification):
 
     # Layout and mapbox properties
     layout = go.Layout(
-        #autosize=True,
+        autosize=True,
         hovermode='closest',
         mapbox=dict(
             accesstoken=mapbox_access_token,
@@ -204,13 +201,6 @@ def update_map(year, classification):
             zoom=4,
             style='mapbox://styles/caldashvinng/ck5i8qzci0t8t1iphlvn9sdz7'
         ),
-        margin={
-            'l': 0,
-            'b': 0,
-            't': 0,
-            'r': 0
-        },
-
 
     )
 
@@ -260,7 +250,7 @@ def create_CV(dff):
         hovermode='closest',
         paper_bgcolor='#FFFFF0',
         plot_bgcolor='#FFFFF0',
-        #autosize = True,
+        autosize = True,
     )
 
     return go.Figure(
