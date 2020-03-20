@@ -21,7 +21,6 @@ mapbox_access_token = 'pk.eyJ1IjoiY2FsZGFzaHZpbm5nIiwiYSI6ImNqcGQzdXlndjAzbnkza3
 
 #dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
 server= app.server
 app.config.suppress_callback_exceptions = True
 
@@ -55,16 +54,16 @@ body = html.Div(
                         columns=[{"name": i, "id": i} for i in df.columns],
                         data=df.to_dict('records'),
                         style_table={
-                            'maxHeight': '250px',
-                            'maxWidth':'100%',
+                            'maxHeight': '420px',
+                            'maxWidth':'300px',
                             'overflowY': 'scroll',
                             'overflowX': 'scroll'
                         },
                     ),
 
-                    html.Div( #div for the graph
-                        dcc.Graph(id='CVgraph')
-                    ),
+                    # html.Div( #div for the graph
+                    #     dcc.Graph(id='CVgraph')
+                    # ),
                 ],
 
                 className='col-lg-3',
@@ -109,7 +108,7 @@ body = html.Div(
                     )
                 ]
             ), #END OF YEAR GRAPH])
-        ]),
+        ], style={'margin-left':'auto', 'margin-right':'auto'}),
     ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
 app.layout = html.Div(
@@ -174,66 +173,66 @@ def update_map(year, classification):
             )
 
 
-#CREATE CV GRAPH
-def create_CV(dff):
-    data = go.Data([
-        go.Scatter(
-            name='CV Graph',
-            x=np.arange(0,100),
-            y=dff.iloc[:,1],
-            mode='lines',
-            visible = True,
-            hoverlabel={
-                'bgcolor': '#FFF',
-            },
-        ),
-    ])
-
-    layout = go.Layout(
-        xaxis={
-            #'autorange': True,
-            'color': '#000000',
-            'title': 'x',
-            'range': [dff.iloc[:,0].min(), dff.iloc[:,0].max()],
-            'dtick': 1
-        },
-        yaxis={
-            #'autorange': True,
-            'color': '#000000',
-            'title': 'y',
-            'range': [dff.iloc[:,1].min(), dff.iloc[:,1].max()],
-            #'dtick': 5
-        },
-        margin={
-            'l': 0,
-            'b': 0,
-            't': 0,
-            'r': 0
-        },
-        hovermode='closest',
-        paper_bgcolor='#FFFFF0',
-        plot_bgcolor='#FFFFF0',
-        #autosize = True,
-    )
-
-    return go.Figure(
-        data=data,  # 54b4e4
-        layout=layout
-    )
-
-
-#UPDATE CVGRAPH
-@app.callback(
-    Output('CVgraph', 'figure'),
-    [Input('mapgraph', 'clickData')]
-    )
-def update_CV(clickData):
-    dff = df[df['number'] == clickData['points'][0]['customdata']]
-    data = df.iloc[0,8]
-    datastring = StringIO(data)
-    dff = pd.read_csv(datastring, header=None)
-
-    return (create_CV(dff))
+# #CREATE CV GRAPH
+# def create_CV(dff):
+#     data = go.Data([
+#         go.Scatter(
+#             name='CV Graph',
+#             x=np.arange(0,100),
+#             y=dff.iloc[:,1],
+#             mode='lines',
+#             visible = True,
+#             hoverlabel={
+#                 'bgcolor': '#FFF',
+#             },
+#         ),
+#     ])
+#
+#     layout = go.Layout(
+#         xaxis={
+#             #'autorange': True,
+#             'color': '#000000',
+#             'title': 'x',
+#             'range': [dff.iloc[:,0].min(), dff.iloc[:,0].max()],
+#             'dtick': 1
+#         },
+#         yaxis={
+#             #'autorange': True,
+#             'color': '#000000',
+#             'title': 'y',
+#             'range': [dff.iloc[:,1].min(), dff.iloc[:,1].max()],
+#             #'dtick': 5
+#         },
+#         margin={
+#             'l': 0,
+#             'b': 0,
+#             't': 0,
+#             'r': 0
+#         },
+#         hovermode='closest',
+#         paper_bgcolor='#FFFFF0',
+#         plot_bgcolor='#FFFFF0',
+#         #autosize = True,
+#     )
+#
+#     return go.Figure(
+#         data=data,  # 54b4e4
+#         layout=layout
+#     )
+#
+#
+# #UPDATE CVGRAPH
+# @app.callback(
+#     Output('CVgraph', 'figure'),
+#     [Input('mapgraph', 'clickData')]
+#     )
+# def update_CV(clickData):
+#     dff = df[df['number'] == clickData['points'][0]['customdata']]
+#     data = df.iloc[0,8]
+#     datastring = StringIO(data)
+#     dff = pd.read_csv(datastring, header=None)
+#
+#     return (create_CV(dff))
 
 
 #YEAR GRAPH
