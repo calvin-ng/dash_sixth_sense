@@ -136,7 +136,7 @@ def update_map(year, classification):
         go.Densitymapbox(
             lat=dff_c['latitude'],
             lon=dff_c['longitude'],
-            z=dff_c['magnitude'],
+            text = dff_c['number'],
             customdata=dff_c['number'],
             colorscale='hot',
             visible=True,
@@ -264,6 +264,7 @@ def by_year(year, classification):
             hoverlabel={
                 'bgcolor': '#FFF',
             },
+            marker_color='#529730'
         ),
         go.Bar(
             name='Not Infected',
@@ -275,6 +276,7 @@ def by_year(year, classification):
             hoverlabel={
                 'bgcolor': '#FFF',
             },
+            marker_color = '#65BC22'
         ),
                 # go.Scatter(
                 #     name='Infected',
