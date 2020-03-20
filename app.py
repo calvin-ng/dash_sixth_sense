@@ -108,9 +108,10 @@ body = html.Div(
                         id='by_year',
                         animate = True,
                     )
-                ]
-            ), #END OF YEAR GRAPH])
-        ], style={'margin-left':'auto', 'margin-right':'auto'}),
+                ],
+                className='col-lg-12',
+            ),  #END OF YEAR GRAPH])
+        ],className='col-lg-12'),
     ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
 app.layout = html.Div(
@@ -255,42 +256,62 @@ def by_year(year, classification):
     y_max = dfff['number'].max()
 
     data = go.Data([
-        go.Scatter(
+        go.Bar(
             name='Infected',
-            # events qty
             x=np.arange(year[0], year[1]),
-            # year
             y=dff_A,
-
-            mode='lines',
             visible = True,
-            marker={
-                'symbol': 'circle',
-                'size': 5,
-                'color': '#eb1054'
-                },
             hoverlabel={
                 'bgcolor': '#FFF',
             },
         ),
-        go.Scatter(
+        go.Bar(
             name='Not Infected',
             # events qty
             x=np.arange(year[0], year[1]),
             # year
             y=dff_B,
-
-            mode='lines',
             visible = True,
-            marker={
-                'symbol': 'circle',
-                'size': 5,
-                'color': '#C2FF0A'
-                },
             hoverlabel={
                 'bgcolor': '#FFF',
             },
         ),
+                # go.Scatter(
+                #     name='Infected',
+                #     # events qty
+                #     x=np.arange(year[0], year[1]),
+                #     # year
+                #     y=dff_A,
+                #
+                #     mode='bar',
+                #     visible = True,
+                #     marker={
+                #         'symbol': 'circle',
+                #         'size': 5,
+                #         'color': '#eb1054'
+                #         },
+                #     hoverlabel={
+                #         'bgcolor': '#FFF',
+                #     },
+                # ),
+                # go.Scatter(
+                #     name='Not Infected',
+                #     # events qty
+                #     x=np.arange(year[0], year[1]),
+                #     # year
+                #     y=dff_B,
+                #
+                #     mode='lines',
+                #     visible = True,
+                #     marker={
+                #         'symbol': 'circle',
+                #         'size': 5,
+                #         'color': '#C2FF0A'
+                #         },
+                #     hoverlabel={
+                #         'bgcolor': '#FFF',
+                #     },
+                # ),
     ])
 
     layout = go.Layout(
@@ -298,13 +319,13 @@ def by_year(year, classification):
             #'autorange': True,
             'color': '#000000',
             'title': 'year',
-            'range': [year[0], year[1]],
+            'range': [year[0], year[1]+0.1],
             'dtick': 1
             },
         yaxis={
             #'autorange': True,
             'color': '#000000',
-            'title': 'Count',
+            'title': 'Number of Cases',
             'range': [y_min-50, y_max+50],
             #'dtick': 5
             },
@@ -315,8 +336,8 @@ def by_year(year, classification):
             'r': 0
             },
             hovermode='closest',
-            paper_bgcolor='#FFFFF0',
-            plot_bgcolor='#FFFFF0',
+            paper_bgcolor='#F0E4E3',
+            plot_bgcolor='#F0E4E3',
             autosize = True,
             )
 
