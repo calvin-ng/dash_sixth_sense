@@ -264,7 +264,7 @@ def by_year(year, classification):
             hoverlabel={
                 'bgcolor': '#FFF',
             },
-            marker_color='#65BC22'
+            marker_color='#407438'
         ),
         go.Bar(
             name='Not Infected',
