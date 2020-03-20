@@ -1,11 +1,13 @@
 body {
-    background: #F0FFF0;
+    background: #F0E4E3;
     padding: 50px;
 }
 
-.header {
+header {
     height: 10vh;
     min-height: 10vh;
+    font-size: 100;
+    font color: #756263;
 
 }
 

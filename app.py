@@ -29,8 +29,9 @@ app.config.suppress_callback_exceptions = True
 if(os.path.isfile('bfro_report_locations.csv')):
     df = pd.read_csv('bfro_report_locations.csv')
 
+app.title = 'CBSD Cases'
 #HEADER
-header = dbc.Row([html.H1('Sixth Sense')], className = 'header')
+header = dbc.Row([html.H1('Cassava Brown Streak Virus Disease Cases', style={'color': '#756263'})])
 
 
 #BODY
@@ -44,30 +45,31 @@ body = html.Div(
                     clickData={'points': [{'customdata': '10407'}]},
                     style={'width': '100%','padding': '0px'}
                 ),
-                className = 'col-lg-9'
+                className = 'col-lg-12'
             ), #left column
 
-            html.Div( #col-lg-3 div
-                children=[
-                    dt.DataTable(
-                        id='case_table',
-                        columns=[{"name": i, "id": i} for i in df.columns],
-                        data=df.to_dict('records'),
-                        style_table={
-                            'maxHeight': '420px',
-                            'maxWidth':'300px',
-                            'overflowY': 'scroll',
-                            'overflowX': 'scroll'
-                        },
-                    ),
+            # html.Div( #col-lg-3 div
+            #     children=[
+            #         dt.DataTable(
+            #             id='case_table',
+            #             columns=[{"name": i, "id": i} for i in df.columns],
+            #             data=df.to_dict('records'),
+            #             style_table={
+            #                 'maxHeight': '420px',
+            #                 'maxWidth':'300px',
+            #                 'overflowY': 'scroll',
+            #                 'overflowX': 'scroll'
+            #             },
+            #         ),
+            #
+            #         # html.Div( #div for the graph
+            #         #     dcc.Graph(id='CVgraph')
+            #         # ),
+            #     ],
+            #
+            #     className='col-lg-3',
+            # )
 
-                    # html.Div( #div for the graph
-                    #     dcc.Graph(id='CVgraph')
-                    # ),
-                ],
-
-                className='col-lg-3',
-            )
         ], style={"width":"100%"}), #END OF dbc.Row
 #================================================================================
 
@@ -90,10 +92,10 @@ body = html.Div(
                 dcc.Checklist(
                     id='class-checklist',
                     options=[
-                        {'label': 'Infected', 'value': 'Class A'},
-                        {'label': 'Not-Infected', 'value': 'Class B'},
+                        {'label': 'Infected', 'value': 'Infected'},
+                        {'label': 'Not-Infected', 'value': 'Not Infected'},
                     ],
-                    value=['Class A', 'Class B']
+                    value=['Infected']
                 ),
             ), #END OF CHECKLIST FOR CLASS
         ], style={'padding': '50px'}),
@@ -247,15 +249,14 @@ def by_year(year, classification):
     for classes in classification:
         dfff = dfff.append(dff[dff['classification'] == classes], ignore_index=True)
     dfff = dfff.groupby(['year','classification'] , as_index=False).count()
-    dff_A = dfff[dfff['classification'] == 'Class A']['number']
-    dff_B = dfff[dfff['classification'] == 'Class B']['number']
-    dff_C = dfff[dfff['classification'] == 'Class C']['number']
+    dff_A = dfff[dfff['classification'] == 'Infected']['number']
+    dff_B = dfff[dfff['classification'] == 'Not Infected']['number']
     y_min = dfff['number'].min()
     y_max = dfff['number'].max()
 
     data = go.Data([
         go.Scatter(
-            name='class A',
+            name='Infected',
             # events qty
             x=np.arange(year[0], year[1]),
             # year
@@ -273,7 +274,7 @@ def by_year(year, classification):
             },
         ),
         go.Scatter(
-            name='class B',
+            name='Not Infected',
             # events qty
             x=np.arange(year[0], year[1]),
             # year
@@ -285,24 +286,6 @@ def by_year(year, classification):
                 'symbol': 'circle',
                 'size': 5,
                 'color': '#C2FF0A'
-                },
-            hoverlabel={
-                'bgcolor': '#FFF',
-            },
-        ),
-        go.Scatter(
-            name='class C',
-            # events qty
-            x=np.arange(year[0], year[1]),
-            # year
-            y=dff_C,
-
-            mode='lines',
-            visible = True,
-            marker={
-                'symbol': 'circle',
-                'size': 5,
-                'color': '#52e5ec'
                 },
             hoverlabel={
                 'bgcolor': '#FFF',
