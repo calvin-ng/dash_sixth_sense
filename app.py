@@ -31,7 +31,7 @@ if(os.path.isfile('bfro_report_locations.csv')):
 
 app.title = 'CBSD Cases'
 #HEADER
-header = dbc.Row([html.H1('Cassava Brown Streak Virus Disease Cases', style={'color': '#756263'})])
+header = dbc.Row([html.H1('Cassava Brown Streak Virus Disease Cases (Test Data)', style={'color': '#756263'})])
 
 
 #BODY
