@@ -29,6 +29,9 @@ app.config.suppress_callback_exceptions = True
 if(os.path.isfile('testdata.csv')):
     df = pd.read_csv('testdata.csv')
 
+#dropping any rows with missing values
+df.dropna(inplace=True)
+
 app.title = 'CBSD Cases'
 #HEADER
 header = dbc.Row([html.H1('Cassava Brown Streak Virus Disease Cases (Test Data)', style={'color': '#756263'})])
@@ -78,26 +81,36 @@ body = html.Div(
                 children=[
                     dcc.RangeSlider(
                         id='date-slider',
-                        min=2000,
-                        max=2019,
-                        value=[2000,2010],
-                        marks={str(year): str(year) for year in df['year'].unique()},
-                        step=None,
+                        min=df['year'].min(),
+                        max=df['year'].max(),
+                        value=[df['year'].min(),df['year'].max()],
+                        marks={int(year) : str(year) for year in df['year'].unique()},
+                        step=None ,
                     ),
                 ], className='col-lg-11',
             ), #END OF YEAR SLIDER
-
         #CHECKLIST FOR CLASS
             html.Div(
-                dcc.Checklist(
-                    id='class-checklist',
+                dcc.RadioItems(
+                    id='class-radio',
                     options=[
                         {'label': 'Infected', 'value': 'Infected'},
                         {'label': 'Not-Infected', 'value': 'Not Infected'},
                     ],
-                    value=['Infected']
+                    value='Infected'
                 ),
-            ), #END OF CHECKLIST FOR CLASS
+            ),
+        # #CHECKLIST FOR CLASS
+        #     html.Div(
+        #         dcc.Checklist(
+        #             id='class-checklist',
+        #             options=[
+        #                 {'label': 'Infected', 'value': 'Infected'},
+        #                 {'label': 'Not-Infected', 'value': 'Not Infected'},
+        #             ],
+        #             value=['Infected']
+        #         ),
+        #     ), #END OF CHECKLIST FOR CLASS
         ], style={'padding': '50px'}),
 
         dbc.Row([
@@ -122,21 +135,20 @@ app.layout = html.Div(
 @app.callback(
     Output('mapgraph', 'figure'),
     [Input('date-slider', 'value'),
-    Input('class-checklist', 'value')]
+    Input('class-radio', 'value')]
 )
 def update_map(year, classification):
     #Update dataframe with the passed value
     dff = df[(df['year'] >= year[0]) & (df['year'] <=year[1])]
-    dff_c = dff[dff['classification']=='empty']
-    for classes in classification:
-        dff_c = dff_c.append(dff[dff['classification'] == classes], ignore_index=True)
-
+    #dff_c = dff[dff['classification']=='empty']
+    #for classes in classification:
+    #    dff_c = dff_c.append(dff[dff['classification'] == classes], ignore_index=True)
+    dff_c = dff[df['classification'] == classification]
     # Paint mapbox into the data
     mapdata = go.Data([
         go.Densitymapbox(
             lat=dff_c['latitude'],
             lon=dff_c['longitude'],
-            text = dff_c['number'],
             customdata=dff_c['number'],
             colorscale='hot',
             visible=True,
@@ -241,19 +253,19 @@ def update_map(year, classification):
 #YEAR GRAPH
 @app.callback(
     Output('by_year', 'figure'),
-    [Input('date-slider', 'value'),
-    Input('class-checklist', 'value')]
+    [Input('date-slider', 'value')]
 )
-def by_year(year, classification):
+def by_year(year):
     dff = df[(df['year'] >= year[0]) & (df['year'] <=year[1])]
-    dfff = dff[dff['classification']=='empty']
+    # dfff = dff[dff['classification']=='empty']
+    classification =['Infected', 'Not Infected']
     for classes in classification:
-        dfff = dfff.append(dff[dff['classification'] == classes], ignore_index=True)
-    dfff = dfff.groupby(['year','classification'] , as_index=False).count()
-    dff_A = dfff[dfff['classification'] == 'Infected']['number']
-    dff_B = dfff[dfff['classification'] == 'Not Infected']['number']
-    y_min = dfff['number'].min()
-    y_max = dfff['number'].max()
+    #     dfff = dfff.append(dff[dff['classification'] == classes], ignore_index=True)
+        dff_counted = dff.groupby(['year','classification'] , as_index=False).count()
+    dff_A = dff_counted[dff_counted['classification'] == 'Infected']['number']
+    dff_B = dff_counted[dff_counted['classification'] == 'Not Infected']['number']
+    y_min = dff_counted['number'].min()
+    y_max = dff_counted['number'].max()
 
     data = go.Data([
         go.Bar(
@@ -321,14 +333,14 @@ def by_year(year, classification):
             #'autorange': True,
             'color': '#000000',
             'title': 'year',
-            'range': [year[0], year[1]+0.1],
+            'range': [year[0], year[1]],
             'dtick': 1
             },
         yaxis={
             #'autorange': True,
             'color': '#000000',
             'title': 'Number of Cases',
-            'range': [y_min-50, y_max+50],
+            'range': [y_min, y_max],
             #'dtick': 5
             },
         margin={
