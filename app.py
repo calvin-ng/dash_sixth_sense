@@ -5,6 +5,7 @@ import dash_html_components as html
 import dash_renderer
 import dash_table as dt
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 import numpy as np
 import pandas as pd
 import plotly
@@ -31,6 +32,7 @@ if(os.path.isfile('testdata.csv')):
 
 #dropping any rows with missing values
 df.dropna(inplace=True)
+total_cases = df.shape[0]
 
 app.title = 'CBSD Cases'
 #HEADER
@@ -48,9 +50,21 @@ body = html.Div(
                     clickData={'points': [{'customdata': '10407'}]},
                     style={'width': '100%','padding': '0px'}
                 ),
-                className = 'col-lg-12'
+                className = 'col-lg-10'
             ), #left column
 
+            html.Div(
+                children=[
+                    html.Div('TOTAL CASES', style={'font-size':'16px', 'text-align':'left', 'color':'#756263', 'font-weight': 'bold', 'margin-left':'30px'}),
+                    daq.LEDDisplay(
+                        value= str(total_cases),
+                        size=80,
+                        color="#756263",
+                        backgroundColor="#FFFFFF",
+                    ),
+                ],
+                className = 'col-lg-2'
+            )
             # html.Div( #col-lg-3 div
             #     children=[
             #         dt.DataTable(
@@ -87,30 +101,42 @@ body = html.Div(
                         marks={int(year) : str(year) for year in df['year'].unique()},
                         step=None ,
                     ),
-                ], className='col-lg-11',
+                ], className='col-lg-10',
             ), #END OF YEAR SLIDER
         #CHECKLIST FOR CLASS
             html.Div(
-                dcc.RadioItems(
-                    id='class-radio',
-                    options=[
-                        {'label': 'Infected', 'value': 'Infected'},
-                        {'label': 'Not-Infected', 'value': 'Not Infected'},
-                    ],
-                    value='Infected'
-                ),
+                children=[
+                    html.Div(id='class-toggle-output', style={'font-size':'16px', 'text-align':'center', 'color':'#756263', 'font-weight': 'bold'}),
+                    daq.ToggleSwitch(
+                        id='class-toggle',
+                        value=True,
+                        size=70,
+                    )
+                ],
+                className='col-lg-2',
+                style={'padding':'5px'}
             ),
-        # #CHECKLIST FOR CLASS
-        #     html.Div(
-        #         dcc.Checklist(
-        #             id='class-checklist',
-        #             options=[
-        #                 {'label': 'Infected', 'value': 'Infected'},
-        #                 {'label': 'Not-Infected', 'value': 'Not Infected'},
-        #             ],
-        #             value=['Infected']
-        #         ),
-        #     ), #END OF CHECKLIST FOR CLASS
+                #RADIO ITEM LIST
+                # dcc.RadioItems(
+                #     id='class-radio',
+                #     options=[
+                #         {'label': 'Infected', 'value': 'Infected'},
+                #         {'label': 'Not-Infected', 'value': 'Not Infected'},
+                #     ],
+                #     value='Infected'
+                # ),
+
+                # #CHECKLIST FOR CLASS
+                #     html.Div(
+                #         dcc.Checklist(
+                #             id='class-checklist',
+                #             options=[
+                #                 {'label': 'Infected', 'value': 'Infected'},
+                #                 {'label': 'Not-Infected', 'value': 'Not Infected'},
+                #             ],
+                #             value=['Infected']
+                #         ),
+                #     ), #END OF CHECKLIST FOR CLASS
         ], style={'padding': '50px'}),
 
         dbc.Row([
@@ -131,13 +157,32 @@ app.layout = html.Div(
     children=[header, body],
 )
 
+#======================================================================
+#============app callback and function declarations
+#======================================================================
+
+#Displaying output for toggle switch
+@app.callback(
+    dash.dependencies.Output('class-toggle-output', 'children'),
+    [dash.dependencies.Input('class-toggle', 'value')])
+def update_output(value):
+    if value:
+        return 'Showing infected cases'
+    else:
+        return 'Showing non-infected cases'
+
+
 #MAPGRAPH
 @app.callback(
     Output('mapgraph', 'figure'),
     [Input('date-slider', 'value'),
-    Input('class-radio', 'value')]
+    Input('class-toggle', 'value')]
 )
-def update_map(year, classification):
+def update_map(year, toggle):
+    if toggle:
+        classification = 'Infected'
+    else:
+        classification = 'Not Infected'
     #Update dataframe with the passed value
     dff = df[(df['year'] >= year[0]) & (df['year'] <=year[1])]
     #dff_c = dff[dff['classification']=='empty']
