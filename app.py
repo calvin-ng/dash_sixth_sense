@@ -26,8 +26,8 @@ app.config.suppress_callback_exceptions = True
 
 
 #read data into panda df
-if(os.path.isfile('bfro_report_locations.csv')):
-    df = pd.read_csv('bfro_report_locations.csv')
+if(os.path.isfile('testdata.csv')):
+    df = pd.read_csv('testdata.csv')
 
 app.title = 'CBSD Cases'
 #HEADER
@@ -155,7 +155,7 @@ def update_map(year, classification):
             accesstoken=mapbox_access_token,
             bearing=0,
             pitch=0,
-            center=dict(lat=34.5, lon=-94.8),
+            center=dict(lat=-4.088772, lon=36.369427),
             zoom=4,
             style='mapbox://styles/caldashvinng/ck5i8qzci0t8t1iphlvn9sdz7'
         ),
