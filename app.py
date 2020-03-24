@@ -32,7 +32,7 @@ if(os.path.isfile('testdata.csv')):
 
 #dropping any rows with missing values
 df.dropna(inplace=True)
-total_cases = df.shape[0]
+
 
 app.title = 'CBSD Cases'
 #HEADER
@@ -57,7 +57,8 @@ body = html.Div(
                 children=[
                     html.Div('TOTAL CASES', style={'font-size':'16px', 'text-align':'left', 'color':'#756263', 'font-weight': 'bold', 'margin-left':'30px'}),
                     daq.LEDDisplay(
-                        value= str(total_cases),
+                        id='total_cases',
+                        value= 0,
                         size=80,
                         color="#756263",
                         backgroundColor="#FFFFFF",
@@ -160,11 +161,26 @@ app.layout = html.Div(
 #======================================================================
 #============app callback and function declarations
 #======================================================================
+@app.callback(
+    Output('total_cases', 'value'),
+    [Input('date-slider', 'value'),
+    Input('class-toggle', 'value')])
+def update_total_cases(year, toggle):
+    if toggle:
+        classification = 'Infected'
+    else:
+        classification = 'Not Infected'
+
+    dff = df[(df['year'] >= year[0]) & (df['year'] <=year[1])]
+    dff = dff[df['classification'] == classification]
+
+    return dff.shape[0]
+
 
 #Displaying output for toggle switch
 @app.callback(
-    dash.dependencies.Output('class-toggle-output', 'children'),
-    [dash.dependencies.Input('class-toggle', 'value')])
+    Output('class-toggle-output', 'children'),
+    [Input('class-toggle', 'value')])
 def update_output(value):
     if value:
         return 'Showing infected cases'
