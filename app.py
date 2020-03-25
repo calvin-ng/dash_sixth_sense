@@ -102,18 +102,19 @@ body = html.Div(
 
         ], style={'padding': '50px'}),
 
+
         dbc.Row([
-        #YEAR GRAPH
-            html.Div(
-                children = [
-                    dcc.Graph(
-                        id='by_year',
-                        animate = True,
-                    )
+            dcc.Store(id="store"),
+            dbc.Tabs(
+                [
+                    dbc.Tab(label="Cumulative number of cases by year", tab_id="cum_graph"),
+                    dbc.Tab(label="Number of cases per year", tab_id="ind_graph"),
                 ],
-                className='col-lg-12',
-            ),  #END OF YEAR GRAPH])
-        ],className='col-lg-12'),
+                id="tabs",
+            ),
+            html.Div(id="tab-content", className="p-4"),
+        ],className='col-lg-12')
+
     ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
 app.layout = html.Div(
@@ -230,7 +231,7 @@ def update_map(year, toggle):
 
 #YEAR GRAPH
 @app.callback(
-    Output('by_year', 'figure'),
+    Output('store', 'data'),
     [Input('date-slider', 'value')]
 )
 def by_year(year):
@@ -245,64 +246,155 @@ def by_year(year):
     y_min = dff_counted['number'].min()
     y_max = dff_counted['number'].max()
 
-    data = go.Data([
-        go.Bar(
-            name='Infected',
-            x=np.arange(year[0], year[1]),
-            y=dff_A,
-            visible = True,
-            hoverlabel={
-                'bgcolor': '#FFF',
-            },
-            marker_color='#407438'
-        ),
-        go.Bar(
-            name='Not Infected',
-            # events qty
-            x=np.arange(year[0], year[1]),
-            # year
-            y=dff_B,
-            visible = True,
-            hoverlabel={
-                'bgcolor': '#FFF',
-            },
-            marker_color = '#65BC22'
-        ),
+    ind_graph = go.Figure(
+        data = go.Data([
+            go.Bar(
+                name='Infected',
+                x=np.arange(year[0], year[1]),
+                y=dff_A,
+                visible = True,
+                hoverlabel={
+                    'bgcolor': '#FFF',
+                },
+                marker_color='#407438'
+            ),
+            go.Bar(
+                name='Not Infected',
+                # events qty
+                x=np.arange(year[0], year[1]),
+                # year
+                y=dff_B,
+                visible = True,
+                hoverlabel={
+                    'bgcolor': '#FFF',
+                },
+                marker_color = '#65BC22'
+            ),
 
-    ])
+        ]),  # 54b4e4
 
-    layout = go.Layout(
-        xaxis={
-            #'autorange': True,
-            'color': '#000000',
-            'title': 'year',
-            'range': [year[0], year[1]],
-            'dtick': 1
-            },
-        yaxis={
-            #'autorange': True,
-            'color': '#000000',
-            'title': 'Number of Cases',
-            'range': [y_min, y_max],
-            #'dtick': 5
-            },
-        margin={
-            'l': 0,
-            'b': 0,
-            't': 0,
-            'r': 0
-            },
-            hovermode='closest',
-            paper_bgcolor='#F0E4E3',
-            plot_bgcolor='#F0E4E3',
-            autosize = True,
-            )
-
-    return go.Figure(
-        data=data,  # 54b4e4
-        layout=layout
+        layout = go.Layout(
+            xaxis={
+                #'autorange': True,
+                'color': '#000000',
+                'title': 'year',
+                'range': [year[0], year[1]],
+                'dtick': 1
+                },
+            yaxis={
+                #'autorange': True,
+                'color': '#000000',
+                'title': 'Number of Cases',
+                'range': [y_min, y_max],
+                #'dtick': 5
+                },
+            margin={
+                'l': 0,
+                'b': 0,
+                't': 0,
+                'r': 0
+                },
+                hovermode='closest',
+                paper_bgcolor='#F0E4E3',
+                plot_bgcolor='#F0E4E3',
+                autosize = True,
+                )
         )
 
+    cum_graph = go.Figure(
+        data = go.Data([
+            go.Scatter(
+                name='Infected',
+                # events qty
+                x=np.arange(year[0], year[1]),
+                # year
+                y=dff_A,
+
+                mode='lines',
+                visible = True,
+                marker={
+                    'symbol': 'circle',
+                    'size': 5,
+                    'color': '#eb1054'
+                    },
+                hoverlabel={
+                    'bgcolor': '#FFF',
+                },
+            ),
+            go.Scatter(
+                name='Not Infected',
+                # events qty
+                x=np.arange(year[0], year[1]),
+                # year
+                y=dff_B,
+
+                mode='lines',
+                visible = True,
+                marker={
+                    'symbol': 'circle',
+                    'size': 5,
+                    'color': '#C2FF0A'
+                    },
+                hoverlabel={
+                    'bgcolor': '#FFF',
+                },
+            )
+        ]),
+
+        layout = go.Layout(
+            xaxis={
+                #'autorange': True,
+                'color': '#000000',
+                'title': 'year',
+                'range': [year[0], year[1]],
+                'dtick': 1
+                },
+            yaxis={
+                #'autorange': True,
+                'color': '#000000',
+                'title': 'Number of Cases',
+                'range': [y_min, y_max],
+                #'dtick': 5
+                },
+            margin={
+                'l': 0,
+                'b': 0,
+                't': 0,
+                'r': 0
+                },
+                hovermode='closest',
+                paper_bgcolor='#F0E4E3',
+                plot_bgcolor='#F0E4E3',
+                autosize = True,
+        )
+    )
+
+    return {"cum_graph":cum_graph, "ind_graph":ind_graph}
+
+
+#RENDERING TAB CONTENT
+@app.callback(
+    Output("tab-content", "children"),
+    [Input("tabs", "active_tab"), Input("store", "data")],
+)
+def render_tab_content(active_tab, data):
+    if active_tab and data is not None:
+        if active_tab == "cum_graph":
+            return dcc.Graph(figure=data["cum_graph"])
+        elif active_tab == "ind_graph":
+            return dcc.Graph(figure=data["ind_graph"])
+    return data
+
+
+
+# html.Div(
+#     children = [
+#         dcc.Graph(
+#             id='by_year',
+#             animate = True,
+#         )
+#     ],
+#     className='col-lg-12',)
 #=================Commented, saved for later=============#######
 #####=============================================##############
 # RADIO ITEM LIST
@@ -348,42 +440,7 @@ def by_year(year):
 #
 #                 className='col-lg-3',
 #             )
-# go.Scatter(
-#     name='Infected',
-#     # events qty
-#     x=np.arange(year[0], year[1]),
-#     # year
-#     y=dff_A,
-#
-#     mode='bar',
-#     visible = True,
-#     marker={
-#         'symbol': 'circle',
-#         'size': 5,
-#         'color': '#eb1054'
-#         },
-#     hoverlabel={
-#         'bgcolor': '#FFF',
-#     },
-# ),
-# go.Scatter(
-#     name='Not Infected',
-#     # events qty
-#     x=np.arange(year[0], year[1]),
-#     # year
-#     y=dff_B,
-#
-#     mode='lines',
-#     visible = True,
-#     marker={
-#         'symbol': 'circle',
-#         'size': 5,
-#         'color': '#C2FF0A'
-#         },
-#     hoverlabel={
-#         'bgcolor': '#FFF',
-#     },
-# ),
+
 #
 # #CREATE CV GRAPH
 # def create_CV(dff):
