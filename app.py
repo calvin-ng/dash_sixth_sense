@@ -315,7 +315,7 @@ def by_year(year):
                 marker={
                     'symbol': 'circle',
                     'size': 5,
-                    'color': '#eb1054'
+                    'color': '#407438'
                     },
                 hoverlabel={
                     'bgcolor': '#FFF',
@@ -333,7 +333,7 @@ def by_year(year):
                 marker={
                     'symbol': 'circle',
                     'size': 5,
-                    'color': '#C2FF0A'
+                    'color': '#65BC22'
                     },
                 hoverlabel={
                     'bgcolor': '#FFF',
