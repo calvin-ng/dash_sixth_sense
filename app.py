@@ -47,7 +47,7 @@ body = html.Div(
             html.Div(
                 dcc.Graph(
                     id='mapgraph',
-                    clickData={'points': [{'customdata': '10407'}]},
+                    clickData={'points': [{'customdata': '7425'}]},
                     style={'width': '100%','padding': '0px'}
                 ),
                 className = 'col-lg-10'
@@ -63,6 +63,7 @@ body = html.Div(
                         color="#756263",
                         backgroundColor="#FFFFFF",
                     ),
+                    html.Div(id='case_info'),
                 ],
                 className = 'col-lg-2'
             )
@@ -175,6 +176,18 @@ def update_total_cases(year, toggle):
     dff = dff[df['classification'] == classification]
 
     return dff.shape[0]
+
+@app.callback(
+    Output('case_info', 'children'),
+    [Input('mapgraph', 'clickData')]
+    )
+def update_case_info(clickData):
+    dff = df[df['number'] == clickData['points'][0]['customdata']]
+    number = dff['number'].values[0]
+    user_id = dff['user id'].values[0]
+    date = str(dff['date'].values[0]) + "-" + str(dff['year'].values[0])
+    info =  ["Case #: {}".format(number), "\n", "User ID: {}".format(user_id), "\n", "Date: {}".format(date)]
+    return info
 
 
 #Displaying output for toggle switch
