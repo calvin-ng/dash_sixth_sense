@@ -104,16 +104,21 @@ body = html.Div(
 
 
         dbc.Row([
-            dcc.Store(id="store"),
-            dbc.Tabs(
-                [
-                    dbc.Tab(label="Cumulative number of cases by year", tab_id="cum_graph"),
-                    dbc.Tab(label="Number of cases per year", tab_id="ind_graph"),
-                ],
-                id="tabs",
-            ),
-            html.Div(id="tab-content", className="p-4"),
-        ],className='col-lg-12')
+            dbc.Col([
+                dcc.Store(id="store"),
+                dbc.Tabs(
+                    [
+                        dbc.Tab(label="Cumulative number of cases by year", tab_id="cum_graph"),
+                        dbc.Tab(label="Number of cases per year", tab_id="ind_graph"),
+                    ],
+                    id="tabs",
+                ),
+                html.Div(id="tab-content", style={'margin-top':'10px'}),
+            ], width=9),
+            dbc.Col([
+                html.Div(style={'background':'#000000'})
+            ])
+        ])
 
     ], style={'margin' : '0px', 'padding':'0px'}) #END of dbc.Container
 
@@ -198,7 +203,8 @@ def update_map(year, toggle):
             customdata=dff_c['number'],
             colorscale='hot',
             visible=True,
-            colorbar=dict(borderwidth=1, xpad=1, ypad=1, thickness=3)
+
+            colorbar=dict(borderwidth=1, xpad=1, ypad=1, thickness=0)
         )
     ])
 
@@ -254,7 +260,7 @@ def by_year(year):
                 y=dff_A,
                 visible = True,
                 hoverlabel={
-                    'bgcolor': '#FFF',
+                    'bgcolor': '#000000',
                 },
                 marker_color='#407438'
             ),
@@ -266,26 +272,34 @@ def by_year(year):
                 y=dff_B,
                 visible = True,
                 hoverlabel={
-                    'bgcolor': '#FFF',
+                    'bgcolor': '#000000',
                 },
                 marker_color = '#65BC22'
             ),
 
-        ]),  # 54b4e4
-
+        ]),
         layout = go.Layout(
+            # title={
+            #     'text':'Number of cases per year',
+            #     'y':0.95,
+            #     'x':0.5,
+            #     'xanchor': 'center',
+            #     'yanchor': 'top'
+            # },
             xaxis={
                 #'autorange': True,
                 'color': '#000000',
                 'title': 'year',
                 'range': [year[0], year[1]],
-                'dtick': 1
+                'dtick': 1,
+                'showgrid':False
                 },
             yaxis={
                 #'autorange': True,
                 'color': '#000000',
-                'title': 'Number of Cases',
+                'title': 'Number of cases per year',
                 'range': [y_min, y_max],
+                'gridcolor':'#000000',
                 #'dtick': 5
                 },
             margin={
@@ -295,9 +309,10 @@ def by_year(year):
                 'r': 0
                 },
                 hovermode='closest',
-                paper_bgcolor='#F0E4E3',
-                plot_bgcolor='#F0E4E3',
-                autosize = True,
+                paper_bgcolor='#faf1f0',
+                plot_bgcolor='#faf1f0',
+                autosize=True,
+
                 )
         )
 
@@ -347,13 +362,15 @@ def by_year(year):
                 'color': '#000000',
                 'title': 'year',
                 'range': [year[0], year[1]],
-                'dtick': 1
+                'dtick': 1,
+                'showgrid':False
                 },
             yaxis={
                 #'autorange': True,
                 'color': '#000000',
                 'title': 'Number of Cases',
                 'range': [y_min, y_max],
+                'gridcolor':'#000000',
                 #'dtick': 5
                 },
             margin={
@@ -363,9 +380,10 @@ def by_year(year):
                 'r': 0
                 },
                 hovermode='closest',
-                paper_bgcolor='#F0E4E3',
-                plot_bgcolor='#F0E4E3',
-                autosize = True,
+                paper_bgcolor='#faf1f0',
+                plot_bgcolor='#faf1f0',
+                autosize=True,
+
         )
     )
 
