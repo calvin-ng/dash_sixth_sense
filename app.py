@@ -48,7 +48,7 @@ body = html.Div(
                 dcc.Graph(
                     id='mapgraph',
                     clickData={'points': [{'customdata': '1670'}]},
-                    style={'width': '100%','padding': '0px'}
+                    style={'width': '100%','padding': '0px'},
                 ),
                 className = 'col-lg-10'
             ), #left column
@@ -74,18 +74,18 @@ body = html.Div(
 #================================================================================
 
         dbc.Row([            # YEAR SLIDER ROW
-            html.Div(
-                children=[
-                    dcc.RangeSlider(
-                        id='date-slider',
-                        min=df['year'].min(),
-                        max=df['year'].max(),
-                        value=[df['year'].min(),df['year'].max()],
-                        marks={int(year) : str(year) for year in df['year'].unique()},
-                        step=None ,
-                    ),
-                ], className='col-lg-10',
-            ), #END OF YEAR SLIDER
+            # html.Div(
+            #     children=[
+            #         dcc.RangeSlider(
+            #             id='date-slider',
+            #             min=df['year'].min(),
+            #             max=df['year'].max(),
+            #             value=[df['year'].min(),df['year'].max()],
+            #             marks={int(year) : str(year) for year in df['year'].unique()},
+            #             step=None ,
+            #         ),
+            #     ], className='col-lg-10',
+            # ), #END OF YEAR SLIDER
         #CHECKLIST FOR CLASS
             html.Div(
                 children=[
@@ -181,57 +181,109 @@ def update_output(value):
 #MAPGRAPH
 @app.callback(
     Output('mapgraph', 'figure'),
-    [Input('date-slider', 'value'),
-    Input('class-toggle', 'value')]
+    [Input('class-toggle', 'value')]
 )
-def update_map(year, toggle):
+def update_map(toggle):
     if toggle:
         classification = 'Infected'
     else:
         classification = 'Not Infected'
-    #Update dataframe with the passed value
-    dff = df[(df['year'] >= year[0]) & (df['year'] <=year[1])]
-    #dff_c = dff[dff['classification']=='empty']
-    #for classes in classification:
-    #    dff_c = dff_c.append(dff[dff['classification'] == classes], ignore_index=True)
-    dff_c = dff[df['classification'] == classification]
+
+
+    dff = df[df['classification'] == classification]
+    min_year = dff['year'].min()
+    max_year = dff['year'].max()
     # Paint mapbox into the data
-    mapdata = go.Data([
-        go.Densitymapbox(
-            lat=dff_c['latitude'],
-            lon=dff_c['longitude'],
-            customdata=dff_c['number'],
-            colorscale='hot',
-            visible=True,
-
-            colorbar=dict(borderwidth=1, xpad=1, ypad=1, thickness=0)
+    data = [
+        go.Scattermapbox(
+            lat=dff[dff['year']==min_year]['latitude'],
+            lon=dff[dff['year']==min_year]['longitude'],
+            customdata=dff['number'],
+            mode='markers',
+            marker=dict(size=dff[dff['year']==min_year]['magnitude'], color='red')
         )
-    ])
+    ]
 
-    # Layout and mapbox properties
     layout = go.Layout(
-        #autosize=True,
+        #width=800,
+        autosize=True,
         hovermode='closest',
-        mapbox=dict(
-            accesstoken=mapbox_access_token,
+        mapbox=dict(accesstoken=mapbox_access_token,
             bearing=0,
+            center=dict(lat=-3.396759, lon=34.275341),
             pitch=0,
-            center=dict(lat=-4.088772, lon=36.369427),
-            zoom=4,
+            zoom=3,
             style='mapbox://styles/caldashvinng/ck5i8qzci0t8t1iphlvn9sdz7'
         ),
         margin={
-            'l': 0,
-            'b': 0,
-            't': 0,
-            'r': 0
+            'l': 5,
+            'b': 5,
+            't': 5,
+            'r': 5
         },
     )
 
-    return go.Figure(
-            data = mapdata,
-            layout = layout
-    )
+    frames = [dict(
+        data= [dict(
+            type='scattermapbox',
+            lat=list(dff[dff['year']<=k]['latitude']),
+            lon=list(dff[dff['year']<=k]['longitude']),
+            marker=dict(size=list(dff[dff['year']<=k]['magnitude']), color='red')
+        )],
+        traces= [0],
+        name='frame{}'.format(k)
+        ) for k  in  range(min_year, max_year+1)]
+
+    sliders = [dict(
+        steps= [dict(
+            method= 'animate',
+            args= [[ 'frame{}'.format(k) ],
+                dict(mode= 'immediate',
+                    frame= dict( duration=150, redraw= True ),
+                    transition=dict( duration= 0)
+                )
+            ],
+            label='{:d}'.format(k)
+        ) for k in range(min_year, max_year+1)
+        ],
+        transition= dict(duration=0),
+        x=0,#slider starting position
+        y=0,
+        currentvalue=dict(
+            font=dict(size=16),
+            prefix='Year: ',
+            visible=True,
+            xanchor= 'center'),
+        len=0.9,
+        pad=dict(t=1))
+    ]
+
+    layout.update(updatemenus=[
+        dict(
+            type='buttons',
+            showactive=False,
+            y=-0.1,
+            x=0.98,
+            xanchor='right',
+            yanchor='top',
+            pad=dict(t=0, r=5),
+            buttons=[dict(label='Play',
+                method='animate',
+                args=[None,
+                    dict(
+                        frame=dict(duration=100,redraw=True),
+                        transition=dict(duration=0),
+                        fromcurrent=True,
+                        mode='immediate',
+                    )
+                ],
+
+            )
+            ]
+        )
+    ],sliders=sliders);
+
+    return go.Figure(data=data, layout=layout, frames=frames)
 
 
 
